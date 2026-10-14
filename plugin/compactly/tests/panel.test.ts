@@ -244,3 +244,17 @@ test('on the desktop app, /cost-panel opens the pane rather than replying with t
   const { text } = await $.command.run({ command: 'cost-panel' } as never)
   expect(text ?? '').not.toMatch(/● Warm, expires in 60 min/)
 })
+
+const MODE = { plugin: 'compactly', component: 'SessionMode' } as const
+
+test('the footer line shows beside the mode labels and pressing it opens the pane', async ($, on) => {
+  world(on)
+  const opened: string[] = []
+  on('ui.open', ($, e) => (opened.push(e.id), { value: { isPlaced: true } } as never))
+  await reply($)
+  const ui = await $.ui.mount({ ...MODE, surface: 'terminal', props: { modes: ['auto mode'] } as never })
+  expect(await ui.find({ type: 'Text', text: 'auto mode' })).toBeDefined()
+  await ui.press({ key: 'footer-open' })
+  expect(opened).toContain('cost-panel')
+  await ui.unmount()
+})

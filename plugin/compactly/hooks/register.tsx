@@ -3,6 +3,7 @@ import type { EngineInterface, ModelUsage, Register } from 'claude-code'
 
 import type { PanelState, Rating, Savings, Unrated } from '../types'
 import { chartAlt, costChart, meter, SERIES, sparkline } from './chart'
+import { footerLine } from './footer'
 import { cacheState, minutes, SNOOZE_MS } from './hints'
 import type { Hint } from './hints'
 import { digest, examples, isOnHold, JUDGES, prompt, SYSTEM, threshold, verdict } from './judge'
@@ -51,6 +52,8 @@ const PANE = 'cost-panel'
 const DEFER_MS = 1500
 const COMMAND_DEFER_MS = 100
 const TICK_MS = 30_000
+// Room the footer line may take beside the mode labels; fields drop from the right past it.
+const FOOTER_COLS = 50
 const MAX_TURNS = 60
 // A tool result at least this large (in tokens, ~4 characters each) is worth a hint.
 const BIG_OUTPUT = 8_000
@@ -577,6 +580,28 @@ export const register: Register = (on, options) => {
         <Button key="rate-good" label="👍 Yes" onPress={press(true)} />
         <Button key="rate-bad" label="👎 No, I was mid-task" onPress={press(false)} />
         <Button key="rate-dismiss" label="Dismiss" onPress={() => void update($, panel, s => ({ ...s, unrated: undefined }))} />
+      </Box>
+    )
+  })
+
+  // The footer line stays whether the pane is open or closed; pressing it opens the pane.
+  on('ui.render', { component: 'SessionMode' }, async ($, e, next) => {
+    const [s, now] = await Promise.all([read($, panel), $.clock.now()])
+    const f = footerLine(s, now, ttl, FOOTER_COLS)
+    if (f === undefined) return next(e)
+    const { Box, Text, Button } = $.ui.resolve(e)
+    return (
+      <Box flexDirection="row" gap={1}>
+        {e.props.modes.length > 0 && <Text dimColor>{e.props.modes.join(' · ')}</Text>}
+        <Button
+          key="footer-open"
+          label={f.text}
+          onPress={() =>
+            void $.ui.open({ id: PANE, title: 'Cost & cache' }).then(opened => {
+              isPanePlaced = opened.isPlaced
+            })
+          }
+        />
       </Box>
     )
   })
