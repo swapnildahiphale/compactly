@@ -162,3 +162,12 @@ test('compacting from the task-boundary hint clears the hint', { options: { mode
   expect(await ui.find({ type: 'Text', text: /Task finished/ })).toBeUndefined()
   expect(await ui.find({ type: 'Text', text: /1 compaction/ })).toBeDefined()
 })
+
+test('after a compaction the panel shows the new context size at once', async ($, on) => {
+  world(on)
+  await reply($)
+  await hostCompact($, 'manual')
+  const ui = await $.ui.mount({ ...PANE, surface: 'terminal', props: PROPS })
+  expect(await ui.find({ type: 'Text', text: /20K \/ 1\.0M/ })).toBeDefined()
+  expect(await ui.find({ type: 'Text', text: /420K \/ 1\.0M/ })).toBeUndefined()
+})
