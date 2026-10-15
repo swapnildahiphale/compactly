@@ -1,12 +1,12 @@
 {
   "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
   "name": "compactly",
-  "description": "Claude Code cost tooling: cost & cache panel and task-boundary compaction",
+  "description": "Compact smartly. Claude Code cost tooling: cost & cache panel and task-boundary compaction",
   "owner": { "name": "Swapnil" },
   "plugins": [
     {
       "name": "compactly",
-      "description": "Cost & cache panel for Claude Code: cache countdown, cost per turn, ranked cost hints, and task-boundary compaction with a handoff summary.",
+      "description": "Compact smartly. Cost & cache panel for Claude Code: cache countdown, cost per turn, ranked cost hints, and task-boundary compaction with a handoff summary.",
       "author": { "name": "Swapnil" },
       "category": "productivity",
       "source": "./plugin/compactly"

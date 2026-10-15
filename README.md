@@ -89,7 +89,8 @@ flowchart TD
     E --> F["send the prompt"] --> G["👍 / 👎 moves the bar"]
 ```
 
-- If no prompt follows a commit, push or PR, it compacts 5 minutes before the cache expires.
+- If no prompt follows a commit, push or PR, it compacts 5 minutes before the cache expires,
+  once the context is at least `minTokens` and your work isn't paused.
 - If your recent prompts say work is paused, git signals don't compact automatically.
 - In `suggest` mode it only tells you when a commit, push or PR is a good moment.
 
