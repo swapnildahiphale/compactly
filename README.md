@@ -85,16 +85,7 @@ Details: [the panel](docs/panel.md).
 
 In `auto` mode, a judge model decides when you send your next prompt:
 
-```mermaid
-flowchart TD
-    A["you send a prompt"] --> B{"context ≥ minTokens?"}
-    B -- no --> Z["the prompt runs"]
-    B -- yes --> C["Sonnet reads a short digest"]
-    C --> D{"natural break, with enough confidence?"}
-    D -- no --> Z
-    D -- yes --> E["hold the prompt, compact with a handoff summary"]
-    E --> F["send the prompt"] --> G["👍 / 👎 moves the bar"]
-```
+![Flowchart: a prompt goes through a minTokens check and the Sonnet judge; only a natural break with enough confidence holds the prompt, compacts it with a handoff summary, sends it and records the 👍 / 👎 feedback, otherwise the prompt just runs](images/auto-compact-flow.png)
 
 - If no prompt follows a commit, push or PR, it compacts 5 minutes before the cache expires,
   once the context is at least `minTokens` and your work isn't paused.
