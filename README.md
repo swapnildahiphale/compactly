@@ -1,10 +1,17 @@
-# compactly
+<h1 align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="images/logo/compactly-lockup-dark.svg">
+    <img alt="compactly" src="images/logo/compactly-lockup-light.svg" width="420">
+  </picture>
+</h1>
 
-**Compact smartly.**
+<p align="center"><b>Compact smartly.</b></p>
 
 A Claude Code mod that compacts your session at task boundaries, with a handoff summary for
 the next task, and shows what each turn costs and when the prompt cache expires. The name is
 the idea: *compact smartly*, with the "smart" squeezed out.
+
+[![Watch the 1-minute launch video](images/launch-video-poster.png)](images/launch-video.mp4)
 
 ![Demo: an 840K context, the Sonnet judge finds a natural break, the mod compacts 840K → 14K for $0.34, pays for itself in 3 turns, and saves $6.77 after the cache goes cold](images/demo-large-context.gif)
 
