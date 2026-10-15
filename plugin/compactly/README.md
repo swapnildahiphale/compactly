@@ -1,5 +1,7 @@
 # compactly
 
+**Compact smartly.**
+
 A Claude Code mod that shows what your session costs and compacts it at task boundaries,
 with a summary written as a handoff for the next task.
 
