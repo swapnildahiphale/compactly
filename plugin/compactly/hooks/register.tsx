@@ -171,6 +171,8 @@ const settle = async (
     const isCold = cacheState(s, now, ttlMsOf(ttl))?.isWarm === false
     return {
       ...s,
+      // The context shrank now; the next measure or turn would only catch up.
+      tokens: r.tokensAfter ?? s.tokens,
       boundary: undefined,
       bigOutput: undefined,
       compactAt: undefined,
