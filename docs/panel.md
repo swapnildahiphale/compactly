@@ -74,18 +74,9 @@ The panel right after one compaction on Claude Opus 5.5:
 Press **⚙ Settings** in the panel header to choose what the panel and the footer line show;
 **← Back** returns to the stats. Choices apply at once and are kept across sessions.
 
-```
-Cost & cache settings                                   [← Back]
+![The panel header with the Settings button](../images/4-panel-annotated.png)
 
-Panel sections
-[x] Stat tiles  [x] Cache clock  [x] Context bar  [x] Hints
-[x] Saved by compacting  [x] Cost per turn
-
-Footer line
-(•) standard  ( ) minimal  ( ) cost
-[x] Cache state  [x] Rebuild cost  [x] Tip count  [x] Context % (from 80%)
-Now: ● warm 59m · $0.012 if cold
-```
+![The settings page](../images/5-settings-annotated.png)
 
 - **Panel sections**: toggle the stat tiles, cache clock, context bar, hints, saved by
   compacting and the cost-per-turn chart.

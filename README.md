@@ -62,6 +62,8 @@ Open it with `/cost-panel`, or press the footer line beside the prompt.
 carries, by preset (`minimal`, `cost`, `standard`) or one at a time. See
 [settings](docs/panel.md#settings).
 
+![The settings page](images/5-settings-annotated.png)
+
 **Saved by compacting** keeps score of what your compactions saved after their own cost, and
 an all-time total earns levels from Cache Rookie to Compaction Legend.
 
