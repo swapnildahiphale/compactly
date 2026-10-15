@@ -43,7 +43,7 @@ See the [decision flow](../diagrams/architecture.md#plugin-decision-flow-compact
 | autocompact (built in) | when the context nears the window limit | general |
 | idle compaction (built in) | after about 55 min idle, context ≥ 200K | general |
 | `/clear`, new session | when you run it | none; only CLAUDE.md and memory remain |
-| **compactly** | at a natural break, before the next prompt, context ≥ `minTokens` | handoff for the next task |
+| **`/compactly`** (or automatic) | when you type it, or at a natural break before the next prompt, context ≥ `minTokens` | handoff for the next task |
 
 compactly uses the same compaction engine as `/compact`, with handoff instructions, at a
 moment you would otherwise have to notice yourself.

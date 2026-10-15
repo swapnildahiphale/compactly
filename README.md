@@ -94,7 +94,7 @@ Details: [how it works](docs/how-it-works.md), [decision flows](diagrams/archite
 | autocompact (built in) | when the context nears the window limit | general |
 | idle compaction (built in) | after about 55 min idle, context ≥ 200K | general |
 | `/clear`, new session | when you run it | none; only CLAUDE.md and memory remain |
-| **compactly** | at a natural break, before the next prompt | handoff for the next task |
+| **`/compactly`** (or automatic) | when you type it, or at a natural break before the next prompt | handoff for the next task |
 
 The trade-off: the judge is sometimes wrong, so some automatic compactions land mid-task.
 Rate them and it becomes more careful, or set `mode` to `suggest` to confirm each one.
