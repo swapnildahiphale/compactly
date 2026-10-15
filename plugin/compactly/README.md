@@ -16,6 +16,9 @@ with a summary written as a handoff for the next task.
     (hotkeys 1, 2, 3 act on the top hint only);
   - Saved by compacting, and Cost per turn.
 
+  A one-line **footer line** beside the prompt keeps the cache state in view when the panel is
+  closed (`● warm 42m · $0.36 if cold · ▲ 1 tip`). Press it to open the panel.
+
   The terminal draws text bars; the desktop app draws SVG. Clicking the buttons in the CLI
   needs `/tui fullscreen`; the hotkeys work without it. Where no window can be drawn, the
   command replies with the same report as text.

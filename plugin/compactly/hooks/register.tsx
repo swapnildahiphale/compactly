@@ -3,6 +3,7 @@ import type { EngineInterface, ModelUsage, Register } from 'claude-code'
 
 import type { PanelState, Rating, Savings, Unrated } from '../types'
 import { chartAlt, costChart, meter, SERIES, sparkline } from './chart'
+import { footerLine } from './footer'
 import { cacheState, minutes, SNOOZE_MS } from './hints'
 import type { Hint } from './hints'
 import { digest, examples, isOnHold, JUDGES, prompt, SYSTEM, threshold, verdict } from './judge'
@@ -51,6 +52,8 @@ const PANE = 'cost-panel'
 const DEFER_MS = 1500
 const COMMAND_DEFER_MS = 100
 const TICK_MS = 30_000
+// Room the footer line may take beside the mode labels; fields drop from the right past it.
+const FOOTER_COLS = 50
 const MAX_TURNS = 60
 // A tool result at least this large (in tokens, ~4 characters each) is worth a hint.
 const BIG_OUTPUT = 8_000
@@ -150,6 +153,12 @@ const oneAtATime = async (idle: Idle, run: () => Promise<void>) => {
   }
 }
 
+// Right after a compaction `context.tokens` is empty until the next response; /context's estimate is not.
+const sizeNow = async ($: EngineInterface) => {
+  const { context } = await $.session.usage({ breakdown: 'summary' }).catch(() => ({ context: undefined }))
+  return context?.tokens ?? context?.breakdown?.totalTokens
+}
+
 /**
  * Settles a main-conversation compaction: the boundary and the big output are gone with the
  * context, and one the person or a plugin chose counts toward the savings.
@@ -164,6 +173,7 @@ const settle = async (
   idle.cancel?.()
   idle.cancel = undefined
   const now = await $.clock.now()
+  const tokensAfter = r.tokensAfter ?? (await sizeNow($))
   return update($, panel, s => {
     const p = priceOf(s.model)
     const tokensBefore = r.tokensBefore ?? s.tokens
@@ -172,12 +182,12 @@ const settle = async (
     return {
       ...s,
       // The context shrank now; the next measure or turn would only catch up.
-      tokens: r.tokensAfter ?? s.tokens,
+      tokens: tokensAfter ?? s.tokens,
       boundary: undefined,
       bigOutput: undefined,
       compactAt: undefined,
-      saved: counts && p !== undefined && tokensBefore > 0 && r.tokensAfter !== undefined
-        ? compacted(s.saved, { tokensBefore, tokensAfter: r.tokensAfter, usage: r.usage }, p, ttl, isCold)
+      saved: counts && p !== undefined && tokensBefore > 0 && tokensAfter !== undefined
+        ? compacted(s.saved, { tokensBefore, tokensAfter, usage: r.usage }, p, ttl, isCold)
         : s.saved,
     }
   })
@@ -197,8 +207,7 @@ const compact = async ($: EngineInterface, idle: Idle, boundary: Reason, ttl: st
     // SDK hosts (-p, stream-json) compact only as a command: run `/compact` itself.
     const tokensBefore = (await read($, panel)).tokens
     await $.command.run({ command: 'compact', args: handoff(boundary, next) })
-    const tokensAfter = (await $.session.usage()).context.tokens
-    await settle($, idle, { tokensBefore, tokensAfter }, true, ttl)
+    await settle($, idle, { tokensBefore }, true, ttl)
     return { text: `compactly: ${boundary} → ran /compact (SDK session)`, isCompacted: true }
   }
   if (r.skip !== undefined) return { text: `compactly: skipped (${r.skip})`, isCompacted: false }
@@ -579,6 +588,28 @@ export const register: Register = (on, options) => {
         <Button key="rate-good" label="👍 Yes" onPress={press(true)} />
         <Button key="rate-bad" label="👎 No, I was mid-task" onPress={press(false)} />
         <Button key="rate-dismiss" label="Dismiss" onPress={() => void update($, panel, s => ({ ...s, unrated: undefined }))} />
+      </Box>
+    )
+  })
+
+  // The footer line stays whether the pane is open or closed; pressing it opens the pane.
+  on('ui.render', { component: 'SessionMode' }, async ($, e, next) => {
+    const [s, now] = await Promise.all([read($, panel), $.clock.now()])
+    const f = footerLine(s, now, ttl, FOOTER_COLS)
+    if (f === undefined) return next(e)
+    const { Box, Text, Button } = $.ui.resolve(e)
+    return (
+      <Box flexDirection="row" gap={1}>
+        {e.props.modes.length > 0 && <Text dimColor>{e.props.modes.join(' · ')}</Text>}
+        <Button
+          key="footer-open"
+          label={f.text}
+          onPress={() =>
+            void $.ui.open({ id: PANE, title: 'Cost & cache' }).then(opened => {
+              isPanePlaced = opened.isPlaced
+            })
+          }
+        />
       </Box>
     )
   })

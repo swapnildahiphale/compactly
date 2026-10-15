@@ -25,8 +25,8 @@ mode with `judge=off`. Items 7 and 8 say what the default Sonnet judge does inst
 
 ![compactly in the Claude Code CLI](images/1-annotated.png)
 
-Open the panel with `/cost-panel`. In the terminal it draws bars as text. In the desktop app
-it draws SVG.
+Open the panel with `/cost-panel`, or press the footer line (item 10). In the terminal it
+draws bars as text. In the desktop app it draws SVG.
 
 1. **Header**: the model, the cache TTL (the `cacheTtl` setting), and a **Compact** button.
 2. **Stat tiles**, each with a sparkline over recent turns:
@@ -56,6 +56,15 @@ The task boundary, as `judge=off` handles it:
    costs much less than reading it fresh. With the judge, this happens when you send the next
    prompt and the judge sees a natural break.
 9. **Next task**: the next prompt ("push it") runs on the 3K summary, not the full 29K.
+
+The footer line, whether the panel is open or not:
+
+10. **Footer line**: a one-line summary at the right of the prompt footer, such as
+    `● warm 59m · $0.012 if cold`. It shows the cache state (warm with minutes left, cold, or
+    unknown) and drops in more only when they matter: the cost of a rebuild, `▲ N tips` when
+    hints are waiting, and `ctx 85%` once the context passes 80%. It turns orange when the
+    cache is in its compact window or cold, and red when the context is nearly full. Press it
+    to open the panel.
 
 Clicking the panel's buttons in the CLI needs `/tui fullscreen`. The hotkeys work without it.
 
