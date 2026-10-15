@@ -11,7 +11,7 @@ A Claude Code mod that compacts your session at task boundaries, with a handoff 
 the next task, and shows what each turn costs and when the prompt cache expires. The name is
 the idea: *compact smartly*, with the "smart" squeezed out.
 
-[![Watch the 1-minute launch video](images/launch-video-poster.png)](images/launch-video.mp4)
+https://github.com/user-attachments/assets/24362a3a-b322-4f26-94bf-4599df35ee4e
 
 ![Demo: an 840K context, the Sonnet judge finds a natural break, the mod compacts 840K → 14K for $0.34, pays for itself in 3 turns, and saves $6.77 after the cache goes cold](images/demo-large-context.gif)
 
