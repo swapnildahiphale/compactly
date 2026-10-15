@@ -8,13 +8,16 @@ with a summary written as a handoff for the next task.
 - **Cost & cache panel** (`/cost-panel`): what each turn costs, when the prompt cache
   expires, and ranked hints: task boundary, cache expiring or cold, unexpected cache rebuild,
   large context, a cheaper model, large tool output. From top to bottom it has:
-  - a header with the model, the cache TTL and a **Compact** button;
+  - a header with the model, the cache TTL, a **⚙ Settings** button and a **Compact** button;
   - four stat tiles with sparklines: Session cost, Cache hit, Re-read per turn, Rebuild if cold;
   - a cache clock bar with warm, compact-window and cold zones, a marker at now, and a legend;
   - the Context bar;
   - ranked hints, each with **1 Compact now**, **2 Snooze 10 min** and **3 Not this session**
     (hotkeys 1, 2, 3 act on the top hint only);
   - Saved by compacting, and Cost per turn.
+
+  **⚙ Settings** turns each section on or off and picks the footer line's fields (presets
+  `minimal`, `cost`, `standard`, or custom); choices are kept across sessions.
 
   A one-line **footer line** beside the prompt keeps the cache state in view when the panel is
   closed (`● warm 42m · $0.36 if cold · ▲ 1 tip`). Press it to open the panel.

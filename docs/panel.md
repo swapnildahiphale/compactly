@@ -10,7 +10,8 @@ mode with `judge=off`. Items 7 and 8 say what the default Sonnet judge does inst
 Open the panel with `/cost-panel`, or press the footer line (item 10). In the terminal it
 draws bars as text. In the desktop app it draws SVG.
 
-1. **Header**: the model, the cache TTL (the `cacheTtl` setting), and a **Compact** button.
+1. **Header**: the model, the cache TTL (the `cacheTtl` setting), a **⚙ Settings** button (see
+   [Settings](#settings)) and a **Compact** button.
 2. **Stat tiles**, each with a sparkline over recent turns:
    - **Session cost**: the cost so far.
    - **Cache hit**: the share of input read from the cache.
@@ -72,6 +73,19 @@ The panel right after one compaction on Claude Opus 5.5:
 
 Press **⚙ Settings** in the panel header to choose what the panel and the footer line show;
 **← Back** returns to the stats. Choices apply at once and are kept across sessions.
+
+```
+Cost & cache settings                                   [← Back]
+
+Panel sections
+[x] Stat tiles  [x] Cache clock  [x] Context bar  [x] Hints
+[x] Saved by compacting  [x] Cost per turn
+
+Footer line
+(•) standard  ( ) minimal  ( ) cost
+[x] Cache state  [x] Rebuild cost  [x] Tip count  [x] Context % (from 80%)
+Now: ● warm 59m · $0.012 if cold
+```
 
 - **Panel sections**: toggle the stat tiles, cache clock, context bar, hints, saved by
   compacting and the cost-per-turn chart.
