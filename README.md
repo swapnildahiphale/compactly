@@ -49,7 +49,7 @@ Open it with `/cost-panel`, or press the footer line beside the prompt.
 
 ![compactly in the Claude Code CLI](images/1-annotated.png)
 
-- **Header**: the model, the cache TTL and a **Compact** button.
+- **Header**: the model, the cache TTL, a **⚙ Settings** button and a **Compact** button.
 - **Stat tiles** with sparklines: session cost, cache hit, re-read per turn, rebuild if cold.
 - **Cache clock**: drains as the cache ages, with a compact window before it goes cold.
 - **Context**: tokens used against the model's window.
@@ -57,6 +57,12 @@ Open it with `/cost-panel`, or press the footer line beside the prompt.
 - **Cost per turn**: cache read, cache write, output and uncached input.
 - **Footer line**: a one-line summary such as `● warm 59m · $0.012 if cold`, visible even
   when the panel is closed.
+
+**⚙ Settings** chooses which sections the panel draws and which fields the footer line
+carries, by preset (`minimal`, `cost`, `standard`) or one at a time. See
+[settings](docs/panel.md#settings).
+
+![The settings page](images/5-settings-annotated.png)
 
 **Saved by compacting** keeps score of what your compactions saved after their own cost, and
 an all-time total earns levels from Cache Rookie to Compaction Legend.

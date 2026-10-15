@@ -90,8 +90,19 @@ export type PanelState = {
   compactAt?: number
 }
 
+/** What the person chose to show: panel sections, and the footer's fields. Kept in the store across sessions. */
+export type Prefs = {
+  views: Record<'tiles' | 'clock' | 'context' | 'hints' | 'saved' | 'chart', boolean>
+  fields: Record<'cache' | 'rebuild' | 'tips' | 'ctx', boolean>
+}
+
+export type PrefsState = Prefs & {
+  /** The panel shows its settings page in place of the stats. */
+  isSettingsOpen: boolean
+}
+
 declare module 'claude-code' {
   interface PluginState {
-    'compactly': { panel: PanelState }
+    'compactly': { panel: PanelState; prefs: PrefsState }
   }
 }

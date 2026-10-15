@@ -1,5 +1,8 @@
 # Configuration
 
+What the panel and the footer line show is set in the panel itself: see
+[settings](panel.md#settings). The rest is below.
+
 The defaults (`auto` mode, the Sonnet judge, 150K tokens) work as they are. To change them,
 pass `--config` when installing:
 
