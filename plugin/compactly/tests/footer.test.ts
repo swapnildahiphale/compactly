@@ -39,3 +39,11 @@ test('no activity yet: the cache state is unknown', async () => {
   const f = footerLine(state({ tokens: 100_000, lastActivityAt: undefined }), 0, '1h')!
   expect(f.text.startsWith('○ cache ?')).toBe(true)
 })
+
+test('turning fields off removes them; with none on there is no footer', async () => {
+  const s = state({ tokens: 850_000 })
+  const off = { cache: true, rebuild: false, tips: false, ctx: false }
+  expect(footerLine(s, 0, '1h', Infinity, off)!.text).toBe('● warm 60m')
+  expect(footerLine(s, 0, '1h', Infinity, { ...off, cache: false, ctx: true })!.text).toBe('ctx 85%')
+  expect(footerLine(s, 0, '1h', Infinity, { ...off, cache: false })).toBeUndefined()
+})

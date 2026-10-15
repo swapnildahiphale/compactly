@@ -1,7 +1,7 @@
 import { atom, read, update } from 'claude-code'
 import type { EngineInterface, ModelUsage, Register } from 'claude-code'
 
-import type { PanelState, Rating, Savings, Unrated } from '../types'
+import type { PanelState, PrefsState, Rating, Savings, Unrated } from '../types'
 import { chartAlt, costChart, meter, SERIES, sparkline } from './chart'
 import { footerLine } from './footer'
 import { cacheState, minutes, SNOOZE_MS } from './hints'
@@ -12,6 +12,9 @@ import { panelModel, ttlMsOf, windowMsOf } from './model'
 import { clockView, hintView, tilesView } from './panel-view'
 import { costSplit, kTokens, priceOf, usd, writePrice } from './pricing'
 import { report } from './report'
+import { DEFAULT_PREFS, normalize, PRESETS } from './settings'
+import type { FieldId, ViewId } from './settings'
+import { settingsView } from './settings-view'
 import { carried, compacted, level, lifetime, net, NO_SAVINGS, payback, signed } from './savings'
 
 type Boundary = 'pr' | 'push' | 'deploy' | 'commit' | 'tests' | 'validate' | 'build' | 'todos'
@@ -66,6 +69,17 @@ const beforeExpiryMs = (ttl: string) => ttlMsOf(ttl) - windowMsOf(ttl)
 // (-p, or another SDK host) is never held back: a -p run ends with it, and the prompt is lost.
 const PERSON = new Set(['composer', 'bridge'])
 const MENTION = /(^|\s)@\S/
+
+const PREFS = 'prefs'
+
+const prefs = atom({ plugin: 'compactly', key: 'prefs' } as const, { ...DEFAULT_PREFS, isSettingsOpen: false } as PrefsState)
+
+/** Applies a change to the preferences and keeps it for later sessions. */
+const setPrefs = async ($: EngineInterface, change: (p: PrefsState) => PrefsState) => {
+  const next = await update($, prefs, change)
+  const { isSettingsOpen: _, ...keep } = next
+  await $.store.set(PREFS, keep).catch(() => undefined)
+}
 
 const panel = atom({ plugin: 'compactly', key: 'panel' } as const, {
   turns: [],
@@ -318,6 +332,12 @@ export const register: Register = (on, options) => {
       const opened = await $.ui.open({ id: PANE, title: 'Cost & cache' })
       isPanePlaced = opened.isPlaced
       $.ui.log(`compactly: panel ${opened.isPlaced ? 'placed' : `waiting (${opened.reason})`}`, { to: 'debug' })
+    }
+    try {
+      const saved = normalize(await $.store.get(PREFS))
+      await update($, prefs, p => ({ ...p, ...saved }))
+    } catch (err) {
+      $.ui.log(`compactly: no saved settings (${String(err)})`, { to: 'debug' })
     }
     // Savings from earlier runs, for the all-time total and the level.
     try {
@@ -594,8 +614,8 @@ export const register: Register = (on, options) => {
 
   // The footer line stays whether the pane is open or closed; pressing it opens the pane.
   on('ui.render', { component: 'SessionMode' }, async ($, e, next) => {
-    const [s, now] = await Promise.all([read($, panel), $.clock.now()])
-    const f = footerLine(s, now, ttl, FOOTER_COLS)
+    const [s, now, pf] = await Promise.all([read($, panel), $.clock.now(), read($, prefs)])
+    const f = footerLine(s, now, ttl, FOOTER_COLS, pf.fields)
     if (f === undefined) return next(e)
     const { Box, Text, Button } = $.ui.resolve(e)
     return (
@@ -633,6 +653,17 @@ export const register: Register = (on, options) => {
       )
     }
 
+    const pf = await read($, prefs)
+    if (pf.isSettingsOpen) {
+      const f = footerLine(s, now, ttl, FOOTER_COLS, pf.fields)
+      return settingsView(els, pf, f?.text, {
+        toggleView: (id: ViewId) => void setPrefs($, p => ({ ...p, views: { ...p.views, [id]: !p.views[id] } })),
+        toggleField: (id: FieldId) => void setPrefs($, p => ({ ...p, fields: { ...p.fields, [id]: !p.fields[id] } })),
+        setPreset: name => void setPrefs($, p => ({ ...p, fields: { ...PRESETS[name]! } })),
+        close: () => void update($, prefs, p => ({ ...p, isSettingsOpen: false })),
+      })
+    }
+
     const share = s.window > 0 ? s.tokens / s.window : 0
     const fill = meter(share, Math.max(10, Math.min(30, cols - 30)))
     const fillColor = share >= 0.8 ? 'error' : share >= 0.5 ? 'warning' : 'claude'
@@ -661,60 +692,70 @@ export const register: Register = (on, options) => {
             <Text bold>Cost & cache</Text>
             <Text dimColor>  {s.model} · {ttl} cache</Text>
           </Text>
-          <Button key="compact-header" label="Compact" onPress={() => void compactAndLog($, idle, ttl)} />
+          <Box flexDirection="row" gap={1}>
+            <Button key="settings-open" label="⚙ Settings" onPress={() => void update($, prefs, p => ({ ...p, isSettingsOpen: true }))} />
+            <Button key="compact-header" label="Compact" onPress={() => void compactAndLog($, idle, ttl)} />
+          </Box>
         </Box>
 
-        {tilesView(els, m.tiles, Svg)}
-        {clockView(els, m.clock, { tokens: kTokens(s.tokens), rebuild: usd(rebuild), auto: mode === 'auto' && judge !== undefined && !isSdk }, cols, Svg)}
+        {pf.views.tiles && tilesView(els, m.tiles, Svg)}
+        {pf.views.clock &&
+          clockView(els, m.clock, { tokens: kTokens(s.tokens), rebuild: usd(rebuild), auto: mode === 'auto' && judge !== undefined && !isSdk }, cols, Svg)}
 
-        <Text>
-          <Text dimColor>Context  </Text>
-          <Text color={fillColor}>{fill.filled}</Text>
-          <Text dimColor>{fill.track}</Text>
-          <Text>  {kTokens(s.tokens)} / {kTokens(s.window)} ({Math.round(share * 100)}%)</Text>
-        </Text>
-
-        <Box flexDirection="column" marginTop={1}>
-          <Text bold>Hints</Text>
-          {m.hints.length === 0 ? (
-            <Text>
-              <Text color="success">✓ Nothing to act on.</Text>
-              <Text dimColor>  The cache is doing its job.</Text>
-            </Text>
-          ) : (
-            m.hints.map((hint, i) => hintView(els, hint, actions(hint), i === 0))
-          )}
-        </Box>
-
-        <Box flexDirection="column" marginTop={1}>
-          <Text bold>Saved by compacting</Text>
-          {v.compactions === 0 ? (
-            <Text dimColor>Nothing yet this session. Compact at a task boundary to start saving.</Text>
-          ) : (
-            <Text>
-              <Text bold color={net(v) >= 0 ? 'success' : 'warning'}>{signed(net(v))}</Text>
-              <Text> this session</Text>
-              <Text dimColor>
-                {'  '}· {v.compactions} compaction{v.compactions === 1 ? '' : 's'} · {kTokens(v.removed)} less to re-read, ~{usd(perTurn)} per turn
-              </Text>
-            </Text>
-          )}
-          {turnsLeft > 0 && <Text dimColor>  The compaction pays for itself in {turnsLeft} more turn{turnsLeft === 1 ? '' : 's'}.</Text>}
+        {pf.views.context && (
           <Text>
-            <Text color="claude">★ Level {lv.rank}: {lv.name}</Text>
-            <Text dimColor>  all time {signed(total)}</Text>
+            <Text dimColor>Context  </Text>
+            <Text color={fillColor}>{fill.filled}</Text>
+            <Text dimColor>{fill.track}</Text>
+            <Text>  {kTokens(s.tokens)} / {kTokens(s.window)} ({Math.round(share * 100)}%)</Text>
           </Text>
-          {lv.next !== undefined && (
-            <Text>
-              <Text dimColor>{'         '}</Text>
-              <Text color="claude">{progress.filled}</Text>
-              <Text dimColor>{progress.track}</Text>
-              <Text dimColor>  {usd(lv.next.usd - total)} to {lv.next.name}</Text>
-            </Text>
-          )}
-        </Box>
+        )}
 
-        {s.turns.length > 0 && (
+        {pf.views.hints && (
+          <Box flexDirection="column" marginTop={1}>
+            <Text bold>Hints</Text>
+            {m.hints.length === 0 ? (
+              <Text>
+                <Text color="success">✓ Nothing to act on.</Text>
+                <Text dimColor>  The cache is doing its job.</Text>
+              </Text>
+            ) : (
+              m.hints.map((hint, i) => hintView(els, hint, actions(hint), i === 0))
+            )}
+          </Box>
+        )}
+
+        {pf.views.saved && (
+          <Box flexDirection="column" marginTop={1}>
+            <Text bold>Saved by compacting</Text>
+            {v.compactions === 0 ? (
+              <Text dimColor>Nothing yet this session. Compact at a task boundary to start saving.</Text>
+            ) : (
+              <Text>
+                <Text bold color={net(v) >= 0 ? 'success' : 'warning'}>{signed(net(v))}</Text>
+                <Text> this session</Text>
+                <Text dimColor>
+                  {'  '}· {v.compactions} compaction{v.compactions === 1 ? '' : 's'} · {kTokens(v.removed)} less to re-read, ~{usd(perTurn)} per turn
+                </Text>
+              </Text>
+            )}
+            {turnsLeft > 0 && <Text dimColor>  The compaction pays for itself in {turnsLeft} more turn{turnsLeft === 1 ? '' : 's'}.</Text>}
+            <Text>
+              <Text color="claude">★ Level {lv.rank}: {lv.name}</Text>
+              <Text dimColor>  all time {signed(total)}</Text>
+            </Text>
+            {lv.next !== undefined && (
+              <Text>
+                <Text dimColor>{'         '}</Text>
+                <Text color="claude">{progress.filled}</Text>
+                <Text dimColor>{progress.track}</Text>
+                <Text dimColor>  {usd(lv.next.usd - total)} to {lv.next.name}</Text>
+              </Text>
+            )}
+          </Box>
+        )}
+
+        {pf.views.chart && s.turns.length > 0 && (
           <Box flexDirection="column" marginTop={1}>
             <Text bold>Cost per turn</Text>
             {Svg !== undefined ? (

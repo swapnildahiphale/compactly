@@ -68,6 +68,18 @@ The panel right after one compaction on Claude Opus 5.5:
 5. **Next level**: a bar and the amount left to reach it. Context Trimmer starts at $1, so
    $1.08 is left from −$0.085.
 
+## Settings
+
+Press **⚙ Settings** in the panel header to choose what the panel and the footer line show;
+**← Back** returns to the stats. Choices apply at once and are kept across sessions.
+
+- **Panel sections**: toggle the stat tiles, cache clock, context bar, hints, saved by
+  compacting and the cost-per-turn chart.
+- **Footer line**: pick a preset, then switch single fields on or off. `minimal` is the cache
+  state alone, `cost` adds the rebuild cost, and `standard` (the default) also shows the tip
+  count and, from 80% full, the context share. Switching a single field makes the preset
+  `custom`; with every field off the footer line is hidden.
+
 ## Coming back after a break
 
 When you return to an old session, Claude Code shows its own notice:
