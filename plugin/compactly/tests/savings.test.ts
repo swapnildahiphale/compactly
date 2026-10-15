@@ -8,7 +8,7 @@ const PANE = { plugin: 'compactly', component: 'Pane', requestId: 'cost-panel' }
 const PROPS = { title: 'Cost & cache', isFocused: false, bodyColumns: 90, placement: 'dock' } as never
 
 // A 420K-token Opus 5 session (read $0.50/M, 1h write $10/M, output $25/M) that compacts to 20K.
-const world = (on: On, store: Record<string, unknown> = {}) => {
+const world = (on: On, store: Record<string, unknown> = {}, { reportsSize = true } = {}) => {
   const toasts: string[] = []
   const logs: string[] = []
   const clock = mock.clock(on)
@@ -21,15 +21,20 @@ const world = (on: On, store: Record<string, unknown> = {}) => {
   on('session.start', ($, e) => ({ cwd: e.cwd }))
   on('command.register', () => ({ value: undefined }) as never)
   on('ui.open', () => ({ value: { isPlaced: false, reason: 'test' } }) as never)
-  on('session.usage', () => ({ value: { startedAt: 0, context: { tokens: 420_000, window: 1_000_000 }, rateLimits: [], cost: { usd: 12.4 } } }))
+  // As the host does when it leaves a compaction's size out: no token count until the next reply, only the breakdown.
+  let isCompacted = false
+  on('session.usage', (_, e) => {
+    const isBlind = isCompacted && !reportsSize
+    const breakdown = e.breakdown && { totalTokens: isBlind ? 20_000 : 420_000 }
+    return { value: { startedAt: 0, context: { tokens: isBlind ? undefined : 420_000, window: 1_000_000, breakdown }, rateLimits: [], cost: { usd: 12.4 } } } as never
+  })
   on('session.model', () => ({ value: 'claude-opus-5' }))
   on('ui.toast', ($, e) => (toasts.push(e.text), { value: undefined }))
   on('ui.status', () => ({ value: undefined }))
   on('ui.log', ($, e) => (e.to === 'debug' || logs.push(e.text), { value: undefined }))
-  on('session.compact', () => ({
+  on('session.compact', () => ((isCompacted = true), {
     messages: [{ role: 'user', text: 'summary', toolUses: [] }] as never,
-    tokensBefore: 420_000,
-    tokensAfter: 20_000,
+    ...(reportsSize ? { tokensBefore: 420_000, tokensAfter: 20_000 } : {}),
     usage: { input_tokens: 0, output_tokens: 2000, cache_read_input_tokens: 420_000, cache_creation_input_tokens: 0 } as never,
   }))
   on('prompt.suggest', () => ({ isShown: true }) as never)
@@ -168,6 +173,15 @@ test('after a compaction the panel shows the new context size at once', async ($
   await reply($)
   await hostCompact($, 'manual')
   const ui = await $.ui.mount({ ...PANE, surface: 'terminal', props: PROPS })
-  expect(await ui.find({ type: 'Text', text: /20K \/ 1\.0M/ })).toBeDefined()
+  expect(await ui.find({ type: 'Text', text: /\b20K \/ 1\.0M/ })).toBeDefined()
+  expect(await ui.find({ type: 'Text', text: /420K \/ 1\.0M/ })).toBeUndefined()
+})
+
+test('a compaction the host reports without a size is measured', async ($, on) => {
+  world(on, {}, { reportsSize: false })
+  await reply($)
+  await hostCompact($, 'manual')
+  const ui = await $.ui.mount({ ...PANE, surface: 'terminal', props: PROPS })
+  expect(await ui.find({ type: 'Text', text: /\b20K \/ 1\.0M/ })).toBeDefined()
   expect(await ui.find({ type: 'Text', text: /420K \/ 1\.0M/ })).toBeUndefined()
 })

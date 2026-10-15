@@ -153,6 +153,12 @@ const oneAtATime = async (idle: Idle, run: () => Promise<void>) => {
   }
 }
 
+// Right after a compaction `context.tokens` is empty until the next response; /context's estimate is not.
+const sizeNow = async ($: EngineInterface) => {
+  const { context } = await $.session.usage({ breakdown: 'summary' }).catch(() => ({ context: undefined }))
+  return context?.tokens ?? context?.breakdown?.totalTokens
+}
+
 /**
  * Settles a main-conversation compaction: the boundary and the big output are gone with the
  * context, and one the person or a plugin chose counts toward the savings.
@@ -167,6 +173,7 @@ const settle = async (
   idle.cancel?.()
   idle.cancel = undefined
   const now = await $.clock.now()
+  const tokensAfter = r.tokensAfter ?? (await sizeNow($))
   return update($, panel, s => {
     const p = priceOf(s.model)
     const tokensBefore = r.tokensBefore ?? s.tokens
@@ -175,12 +182,12 @@ const settle = async (
     return {
       ...s,
       // The context shrank now; the next measure or turn would only catch up.
-      tokens: r.tokensAfter ?? s.tokens,
+      tokens: tokensAfter ?? s.tokens,
       boundary: undefined,
       bigOutput: undefined,
       compactAt: undefined,
-      saved: counts && p !== undefined && tokensBefore > 0 && r.tokensAfter !== undefined
-        ? compacted(s.saved, { tokensBefore, tokensAfter: r.tokensAfter, usage: r.usage }, p, ttl, isCold)
+      saved: counts && p !== undefined && tokensBefore > 0 && tokensAfter !== undefined
+        ? compacted(s.saved, { tokensBefore, tokensAfter, usage: r.usage }, p, ttl, isCold)
         : s.saved,
     }
   })
@@ -200,8 +207,7 @@ const compact = async ($: EngineInterface, idle: Idle, boundary: Reason, ttl: st
     // SDK hosts (-p, stream-json) compact only as a command: run `/compact` itself.
     const tokensBefore = (await read($, panel)).tokens
     await $.command.run({ command: 'compact', args: handoff(boundary, next) })
-    const tokensAfter = (await $.session.usage()).context.tokens
-    await settle($, idle, { tokensBefore, tokensAfter }, true, ttl)
+    await settle($, idle, { tokensBefore }, true, ttl)
     return { text: `compactly: ${boundary} → ran /compact (SDK session)`, isCompacted: true }
   }
   if (r.skip !== undefined) return { text: `compactly: skipped (${r.skip})`, isCompacted: false }
