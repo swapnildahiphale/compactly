@@ -1,9 +1,19 @@
-# compactly
+<h1 align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="images/logo/compactly-lockup-dark.svg">
+    <img alt="compactly" src="images/logo/compactly-lockup-light.svg" width="420">
+  </picture>
+</h1>
+
+<p align="center"><b>Compact smartly.</b></p>
 
 A Claude Code mod that compacts your session at task boundaries, with a handoff summary for
-the next task, and shows what each turn costs and when the prompt cache expires.
+the next task, and shows what each turn costs and when the prompt cache expires. The name is
+the idea: *compact smartly*, with the "smart" squeezed out.
 
-![Demo: an 840K context, the Sonnet judge finds a natural break, the mod compacts 840K → 14K for $0.34, pays for itself in 3 turns, and saves $6.77 after the cache goes cold](images/demo-large-context.gif)
+https://github.com/user-attachments/assets/e05ea6ec-b28d-4a0d-ad48-c8f92520683b
+
+![Demo: an 840K context, the Sonnet judge finds a natural break, the mod compacts 840K → 14K for $0.34, pays for itself in 3 turns, and a cold-cache rebuild drops from $6.72 to $0.11](images/demo-large-context.gif)
 
 Claude Code re-reads the whole conversation on every request, so a large context carried
 into an unrelated task is paid for again on every turn. Compacting in the middle of a task
@@ -75,18 +85,10 @@ Details: [the panel](docs/panel.md).
 
 In `auto` mode, a judge model decides when you send your next prompt:
 
-```mermaid
-flowchart TD
-    A["you send a prompt"] --> B{"context ≥ minTokens?"}
-    B -- no --> Z["the prompt runs"]
-    B -- yes --> C["Sonnet reads a short digest"]
-    C --> D{"natural break, with enough confidence?"}
-    D -- no --> Z
-    D -- yes --> E["hold the prompt, compact with a handoff summary"]
-    E --> F["send the prompt"] --> G["👍 / 👎 moves the bar"]
-```
+![Flowchart: a prompt goes through a minTokens check and the Sonnet judge; only a natural break with enough confidence holds the prompt, compacts it with a handoff summary, sends it and records the 👍 / 👎 feedback, otherwise the prompt just runs](images/auto-compact-flow.png)
 
-- If no prompt follows a commit, push or PR, it compacts 5 minutes before the cache expires.
+- If no prompt follows a commit, push or PR, it compacts 5 minutes before the cache expires,
+  once the context is at least `minTokens` and your work isn't paused.
 - If your recent prompts say work is paused, git signals don't compact automatically.
 - In `suggest` mode it only tells you when a commit, push or PR is a good moment.
 

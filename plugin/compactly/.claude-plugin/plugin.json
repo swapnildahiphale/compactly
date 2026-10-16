@@ -1,7 +1,7 @@
 {
   "name": "compactly",
   "version": "0.7.0",
-  "description": "Cost & cache panel for Claude Code: cache countdown, cost per turn, ranked cost hints, savings from compacting, and compaction at natural breaks, judged by a model you teach with 👍/👎, with a handoff summary.",
+  "description": "Compact smartly. Cost & cache panel for Claude Code: cache countdown, cost per turn, ranked cost hints, savings from compacting, and compaction at natural breaks, judged by a model you teach with 👍/👎, with a handoff summary.",
   "author": {
     "name": "Swapnil"
   },

@@ -21,7 +21,8 @@ instead of the cache-read price. With the 133K context from
 cache, that is about $0.17 for a warm compaction and up to $1.20 for a cold one. So after a
 turn with a git commit, push or PR, if no prompt follows, the mod compacts 5 minutes
 before the cache expires (1 minute with the 5-minute cache). A prompt before then cancels
-this, and the judge decides as usual.
+this, and the judge decides as usual. This needs a judge (`judge` not `off`), a context of at
+least `minTokens`, and recent prompts that don't say work is paused (see below).
 
 **Paused work.** A commit does not always mean the work is done. You may commit half a
 migration and pause the rest. If your last three prompts, or the answers since, say work is
