@@ -13,7 +13,9 @@ the idea: *compact smartly*, with the "smart" squeezed out.
 
 https://github.com/user-attachments/assets/e05ea6ec-b28d-4a0d-ad48-c8f92520683b
 
-![Demo: an 840K context, the Sonnet judge finds a natural break, the mod compacts 840K → 14K for $0.34, pays for itself in 3 turns, and a cold-cache rebuild drops from $6.72 to $0.11](images/demo-large-context.gif)
+![Illustrative demo: an 840K context, the Sonnet judge finds a natural break, the mod compacts 840K → 14K for $0.34, pays for itself in 3 turns, and a cold-cache rebuild drops from $6.72 to $0.11](images/demo-large-context.gif)
+
+<sub>Illustrative session · costs vary by model and context.</sub>
 
 Claude Code re-reads the whole conversation on every request, so a large context carried
 into an unrelated task is paid for again on every turn. Compacting in the middle of a task
