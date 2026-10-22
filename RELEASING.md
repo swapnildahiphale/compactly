@@ -7,8 +7,8 @@ happens (the cadence) and how one is cut (the checklist).
 
 Compactly follows [Semantic Versioning](https://semver.org/). While it is below 1.0:
 
-- **Patch** (`0.7.1`): bug fixes, docs and wording changes. Nothing new to configure.
-- **Minor** (`0.8.0`): new features, commands or settings. A change that breaks existing
+- **Patch** (`0.1.1`): bug fixes, docs and wording changes. Nothing new to configure.
+- **Minor** (`0.2.0`): new features, commands or settings. A change that breaks existing
   settings or commands also goes in a minor while we are below 1.0, and it is marked
   **Breaking** in the changelog with what to change.
 - **Major** (`1.0.0`): reserved for when the settings and commands are considered stable.
@@ -29,15 +29,16 @@ Dates in IST.
 
 ### Upcoming
 
-| Date | Release | Notes |
+| Date | What | Notes |
 |---|---|---|
-| Fri 31 Oct 2026 | Freeze | Only fixes merge after this until the launch release is out. |
-| Mon 3 Nov 2026 | Launch release | `v0.8.0` if a feature lands before the freeze, otherwise `v0.7.1`. Cut it the day before the Show HN post on Tue 4 Nov, so the README, the release page and compactly.dev all show the same version. |
+| Fri 31 Oct 2026 | Freeze | Only fixes merge until the launch is over. |
+| Mon 3 Nov 2026 | Minor slot | Normal slot rules: release only if `[Unreleased]` has user-facing entries, otherwise skip. |
+| Tue 4 Nov 2026 | Launch (Show HN) | No release of its own. The launch ships whatever release is Latest on GitHub. Check that the README, the release page and compactly.dev show that version. |
 | Mon 17 Nov 2026 | Minor slot | Skip if `[Unreleased]` has nothing user-facing. |
 | Mon 1 Dec 2026 | Minor slot | Skip if `[Unreleased]` has nothing user-facing. |
 
-After that, every second Monday. If the launch moves, the launch release moves with it and
-the two-week slots restart from the new date.
+After that, every second Monday. If the launch moves, the freeze moves with it (the Friday
+before), and the launch still ships the Latest release.
 
 ## While you work
 
