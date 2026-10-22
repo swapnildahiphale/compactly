@@ -2,8 +2,8 @@
 # Print one version's section from CHANGELOG.md, without its heading,
 # for pasting into a GitHub Release.
 #
-# Usage: scripts/release-notes.sh 0.7.0
-#        scripts/release-notes.sh v0.7.0
+# Usage: scripts/release-notes.sh 0.1.0
+#        scripts/release-notes.sh v0.1.0
 #        scripts/release-notes.sh Unreleased
 set -eu
 
