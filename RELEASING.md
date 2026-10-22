@@ -2,8 +2,8 @@
 
 Releases are cut by hand. There is no release workflow.
 
-Compactly follows [Semantic Versioning](https://semver.org/): a patch (`0.7.1`) for fixes, a
-minor (`0.8.0`) for new features or settings, and a major for changes that break existing
+Compactly follows [Semantic Versioning](https://semver.org/): a patch (`0.1.1`) for fixes, a
+minor (`0.2.0`) for new features or settings, and a major for changes that break existing
 settings or commands.
 
 ## While you work
