@@ -11,7 +11,9 @@ The version lives in `plugin/compactly/.claude-plugin/plugin.json`. See
 
 ### Added
 
-- `CHANGELOG.md`, `RELEASING.md` and `scripts/release-notes.sh` for release notes.
+- `CHANGELOG.md`, `RELEASING.md` and `scripts/release-notes.sh` for release notes (#5).
+- A release cadence in `RELEASING.md` and a pull request template with a changelog
+  checkbox (#7).
 
 ### Changed
 
@@ -22,6 +24,8 @@ The version lives in `plugin/compactly/.claude-plugin/plugin.json`. See
   decision flowchart is now a drawn diagram (#4).
 - The docs say that compaction before the cache expires respects `minTokens` and paused
   work (#4).
+- The README demo GIF is labeled as an illustrative session, since costs vary by model and
+  context (#6).
 
 ## [0.7.0] - 2026-10-15
 
