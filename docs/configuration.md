@@ -25,7 +25,7 @@ the file; don't replace the file:
 }
 ```
 
-The key is `<name>@<marketplace>`, which is `compactly@compactly`. When the mod is loaded
+The key is `<name>@<marketplace>`, which is `compactly@compactly`. When the plugin is loaded
 from a local folder with `CLAUDE_CODE_PLUGIN_DIRS`, the key is the bare name, `compactly`.
 Start a new session after changing settings.
 

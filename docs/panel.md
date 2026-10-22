@@ -1,7 +1,7 @@
 # The panel
 
 Here is a session in the Claude Code CLI: the transcript on the left, the panel on the right.
-The user asks Claude to commit, and the mod compacts when that turn ends. That is `auto`
+The user asks Claude to commit, and the plugin compacts when that turn ends. That is `auto`
 mode with `judge=off`. Items 7 and 8 say what the default Sonnet judge does instead (see
 [How it decides](how-it-works.md#how-it-decides)).
 
@@ -34,7 +34,7 @@ The task boundary, as `judge=off` handles it:
 7. **Boundary signal**: Claude runs a successful `git commit`. With `judge=off`, a commit,
    push or PR ends a task. With the default Sonnet judge it does not compact by itself. It
    only arms a compaction before the cache expires, in case no prompt follows.
-8. **Compaction**: when the turn ends, the mod compacts with a handoff summary. The
+8. **Compaction**: when the turn ends, the plugin compacts with a handoff summary. The
    context drops from 29K to 3K tokens. The summarizer reads the 29K from the cache, which
    costs much less than reading it fresh. With the judge, this happens when you send the next
    prompt and the judge sees a natural break.
