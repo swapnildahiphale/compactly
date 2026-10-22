@@ -22,6 +22,8 @@ The version lives in `plugin/compactly/.claude-plugin/plugin.json`. See
   decision flowchart is now a drawn diagram (#4).
 - The docs say that compaction before the cache expires respects `minTokens` and paused
   work (#4).
+- The README and docs call Compactly a plugin instead of a mod, matching Claude Code's
+  plugin system and compactly.dev (#8).
 
 ## [0.7.0] - 2026-10-15
 

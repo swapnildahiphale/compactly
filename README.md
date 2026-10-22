@@ -7,13 +7,13 @@
 
 <p align="center"><b>Compact smartly.</b></p>
 
-A Claude Code mod that compacts your session at task boundaries, with a handoff summary for
+A Claude Code plugin that compacts your session at task boundaries, with a handoff summary for
 the next task, and shows what each turn costs and when the prompt cache expires. The name is
 the idea: *compact smartly*, with the "smart" squeezed out.
 
 https://github.com/user-attachments/assets/e05ea6ec-b28d-4a0d-ad48-c8f92520683b
 
-![Illustrative demo: an 840K context, the Sonnet judge finds a natural break, the mod compacts 840K → 14K for $0.34, pays for itself in 3 turns, and a cold-cache rebuild drops from $6.72 to $0.11](images/demo-large-context.gif)
+![Illustrative demo: an 840K context, the Sonnet judge finds a natural break, the plugin compacts 840K → 14K for $0.34, pays for itself in 3 turns, and a cold-cache rebuild drops from $6.72 to $0.11](images/demo-large-context.gif)
 
 <sub>Illustrative session · costs vary by model and context.</sub>
 
@@ -27,8 +27,8 @@ drops what it still needs. compactly compacts in between: right after the work i
 
 ## Install
 
-Requires Claude Code 2.1.295 or later. compactly is a mod, installed through Claude Code's
-plugin system. Inside Claude Code:
+Requires Claude Code 2.1.295 or later. compactly is a plugin and installs
+through Claude Code's plugin system. Inside Claude Code:
 
 ```
 /plugin marketplace add swapnildahiphale/compactly
@@ -49,10 +49,10 @@ scopes, updating and uninstalling.
 - `/cost-panel` opens the cost & cache panel, or press the footer line beside the prompt.
 - `/compactly` compacts now.
 - By default (`auto` mode), Claude Sonnet reads each new prompt once the context is large. If
-  the prompt starts after a natural break, the mod compacts first and then sends the prompt.
+  the prompt starts after a natural break, the plugin compacts first and then sends the prompt.
   A band above the prompt asks **👍 Yes** or **👎 No, I was mid-task**, and the judge learns
   from your answers.
-- In `suggest` mode, the mod only tells you when a git commit, push or PR is a good moment to
+- In `suggest` mode, the plugin only tells you when a git commit, push or PR is a good moment to
   compact.
 
 ## The panel
@@ -129,13 +129,13 @@ Details: [configuration](docs/configuration.md), [installation](docs/installatio
 
 ## Privacy
 
-The mod makes no network calls of its own. The judge runs through Claude Code with the model
-you pick. Ratings and savings totals are kept in the mod's own store under `~/.claude`, on your
+The plugin makes no network calls of its own. The judge runs through Claude Code with the model
+you pick. Ratings and savings totals are kept in the plugin's own store under `~/.claude`, on your
 machine.
 
 ## Contributing
 
-Issues and pull requests are welcome. To work on the mod from a clone, see
+Issues and pull requests are welcome. To work on the plugin from a clone, see
 [Develop](plugin/compactly/README.md#develop).
 
 ## License

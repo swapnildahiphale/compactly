@@ -8,7 +8,7 @@ In `auto` mode (the default):
 2. Claude Sonnet reads a short digest: how the session started, your last two prompts, the
    files edited since, the start of the last answer, and the new prompt. It says whether this
    is a natural break, and how confident it is. One check costs well under a cent.
-3. At a break with enough confidence, the mod holds your prompt back and compacts with a
+3. At a break with enough confidence, the plugin holds your prompt back and compacts with a
    handoff summary. The summary keeps open work, paused work and why it stopped, decisions
    with their reasons, and file paths. Then it sends the prompt.
 4. You rate the compaction 👍 or 👎. Each 👎 raises the confidence the judge needs. Every
@@ -19,7 +19,7 @@ break the cache has expired, and the summarizer would read the whole context at 
 instead of the cache-read price. With the 133K context from
 [Coming back after a break](panel.md#coming-back-after-a-break), on Claude Opus 5.5 and the 1-hour
 cache, that is about $0.17 for a warm compaction and up to $1.20 for a cold one. So after a
-turn with a git commit, push or PR, if no prompt follows, the mod compacts 5 minutes
+turn with a git commit, push or PR, if no prompt follows, the plugin compacts 5 minutes
 before the cache expires (1 minute with the 5-minute cache). A prompt before then cancels
 this, and the judge decides as usual. This needs a judge (`judge` not `off`), a context of at
 least `minTokens`, and recent prompts that don't say work is paused (see below).
@@ -30,7 +30,7 @@ paused, on hold, blocked or waiting, no git signal compacts automatically. The s
 where "why we stopped" would get lost, so that compaction is left to you.
 
 **`suggest` mode.** A successful `git commit`, `git push` or `gh pr create/merge` on a large
-context makes the mod suggest `/compactly`. With `judge` set to `off`, `auto` mode compacts
+context makes the plugin suggest `/compactly`. With `judge` set to `off`, `auto` mode compacts
 on those signals instead.
 
 See the [decision flow](../diagrams/architecture.md#plugin-decision-flow-compactly).
@@ -64,7 +64,7 @@ judge becomes more careful. Set `mode` to `suggest` if you would rather confirm 
 
 Git signals (commit, push, PR) mark the end of a task only loosely, so the default `auto` mode
 lets the judge decide at prompt time instead. The judge is Claude Sonnet 5.5 by default. Its
-error rate is not measured here. Your 👍 and 👎 ratings are the labels the mod learns from,
+error rate is not measured here. Your 👍 and 👎 ratings are the labels the plugin learns from,
 and they show how often the judge is right for you. Switch to `suggest` mode if mid-task
 compactions cost you more than they save.
 

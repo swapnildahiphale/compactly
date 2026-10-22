@@ -1,6 +1,6 @@
 # Installation
 
-compactly is a Claude Code mod, installed through Claude Code's plugin system. It works in
+compactly is a Claude Code plugin and installs through Claude Code's plugin system. It works in
 the Claude Code CLI and the desktop app, and needs Claude Code 2.1.295 or later.
 
 ## Check your Claude Code version
@@ -35,7 +35,7 @@ Or from a shell, in one command:
 claude plugin install compactly --marketplace swapnildahiphale/compactly
 ```
 
-This adds the marketplace and enables the mod in `~/.claude/settings.json`. Start a new
+This adds the marketplace and enables the plugin in `~/.claude/settings.json`. Start a new
 session afterwards.
 
 ## From a local clone
@@ -54,7 +54,7 @@ claude
 
 ## Scope
 
-Installs are per user by default. Add `--scope project` to share the mod with a
+Installs are per user by default. Add `--scope project` to share the plugin with a
 repository's collaborators, or `--scope local` to keep it to yourself in that repository.
 
 ## Update and uninstall
