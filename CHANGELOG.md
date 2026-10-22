@@ -9,6 +9,11 @@ The version lives in `plugin/compactly/.claude-plugin/plugin.json`. See
 
 ## [Unreleased]
 
+### Added
+
+- A release cadence in `RELEASING.md` and a pull request template with a changelog
+  checkbox (#7).
+
 ## [0.1.0] - 2026-10-22
 
 First public release.
